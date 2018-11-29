@@ -4,13 +4,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main3 {
 
     public static void main(String[] args) {
-        String fname = "test2.bas"; //デフォネーム
+        String fname = "test1.bas"; //デフォネーム
         InputStream in = null;
 
         //ファイル名があれば読む

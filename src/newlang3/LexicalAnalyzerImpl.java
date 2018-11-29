@@ -3,10 +3,7 @@ package newlang3;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
-import java.io.Reader;
 import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Map;
 
 public class LexicalAnalyzerImpl implements LexicalAnalyzer {
@@ -76,27 +73,19 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
         } else {
             pbReader.unread(ci);
         }
-
-        //LITERAL
+        //文字に合わせて呼ぶメソッドを変更
         if (ci == '\"') {
             return getLiteral();
-        }
-        //NUMBER
-        if ('0' <= ci && ci <= '9') {
+        } else if ('0' <= ci && ci <= '9') {
             return getNumber();
-        }
-        //WORD
-        if (('a' <= ci && ci <= 'z') || ('A' <= ci && ci <= 'Z')) {
+        } else if (('a' <= ci && ci <= 'z') || ('A' <= ci && ci <= 'Z')) {
             return getString();
-        }
-        //SYMBOL
-        if (SYMBOL_MAP.containsKey(String.valueOf((char) ci))) {
+        } else if (SYMBOL_MAP.containsKey(String.valueOf((char) ci))) {
             return getSymbol();
+        } else {
+            //それ以外の文字。マルチバイトとか変な記号とか来たら返す
+            throw new Exception("使用できない文字が含まれています");
         }
-
-        //それ以外の文字。マルチバイトとか変な記号とか来たら返す
-        throw new Exception("使用できない文字が含まれています");
-
     }
 
     private LexicalUnit getLiteral() throws Exception {
@@ -150,7 +139,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
         }
     }
 
-    // WORD  文字例(数字含む)が続く限りそれを読み続けるメソッド。 
+    // WORD  文字例(数字含む)が続く限りそれを読み続けるメソッド。
     private LexicalUnit getString() throws Exception {
         //長いString が伸びていく。数字の場合も伸びていくようになる。
         //BASICでは大文字小文字が区別されない。のでそれに倣って全て大文字に変換。
@@ -161,7 +150,6 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
             if (ci < 0) {
                 break;
             }
-            //WORD
             if (('a' <= ci && ci <= 'z') || ('A' <= ci && ci <= 'Z') || ('0' <= ci && ci <= '9')) {
                 str += (char) ci;
             } else {
@@ -176,11 +164,6 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
         } else {
             return new LexicalUnit(LexicalType.NAME, new ValueImpl(str));
         }
-
-        //これが一番大事。でもこれだと予約語に対応できてない。
-        //予約語かどうかは1行で済む。
-        //予約語表は別で作るけど判定は
-        //1行にまとめる? map
     }
 
     private LexicalUnit getSymbol() throws Exception {
@@ -191,7 +174,6 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
             ci = pbReader.read();
             if (ci < 0) {
                 break;
-                //throw new Exception("記号解析中にファイル終端に達しました");
             }
             if (SYMBOL_MAP.containsKey(symbol + (char) ci)) {
                 symbol += (char) ci;
@@ -200,21 +182,18 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
                 break;
             }
         }
-
         return SYMBOL_MAP.get(symbol);
     }
 
     @Override
-    //型を要求？期待？
+    //型を要求？
     public boolean expect(LexicalType type) throws Exception {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         return false;
     }
 
     @Override
-    //トークンの破棄？
     public void unget(LexicalUnit token) throws Exception {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 }
