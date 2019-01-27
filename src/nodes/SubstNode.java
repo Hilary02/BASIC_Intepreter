@@ -5,9 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import newlang4.Environment;
-import newlang4.LexicalType;
-import newlang4.LexicalUnit;
+import newlang5.*;
 
 public class SubstNode extends Node {
 
@@ -54,7 +52,14 @@ public class SubstNode extends Node {
         return true;
     }
 
+    @Override
+    public Value getValue() throws Exception {
+        env.getVariable(leftvar).setValue(expr.getValue());
+        return null;
+//return env.getVariable(leftvar).getValue();
+    }
+
     public String toString() {
-        return String.format("[%s <- %s]", leftvar, expr);
+        return String.format("[%s ← %s]", leftvar, expr);
     }
 }

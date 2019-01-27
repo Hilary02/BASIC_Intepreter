@@ -1,6 +1,6 @@
 package nodes;
 
-import newlang4.*;
+import newlang5.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -94,6 +94,15 @@ public class LoopBlockNode extends Node {
     }
 
     public Value getValue() throws Exception {
+        if (isDoLoop) {
+            do {
+                operation.getValue();
+            } while (cond.getValue().getBValue() == condJudge);
+        } else {
+            while (cond.getValue().getBValue() == condJudge) { //condJudgeはWHILE時TRUE、UNTIL時FALSEとなるので、一致するか確かめる
+                operation.getValue();
+            }
+        }
         return null;
     }
 

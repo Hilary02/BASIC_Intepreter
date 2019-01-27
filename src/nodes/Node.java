@@ -1,13 +1,12 @@
 package nodes;
 
-import newlang4.Environment;
-import newlang4.LexicalType;
-import newlang4.Value;
+import newlang5.*;
 
 public class Node {
 
     NodeType type;
     Environment env;
+    public Node next;
 
     public Node() {
     }

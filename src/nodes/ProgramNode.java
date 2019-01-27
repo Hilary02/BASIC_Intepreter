@@ -2,8 +2,7 @@ package nodes;
 
 import java.util.HashSet;
 import java.util.Set;
-import newlang4.Environment;
-import newlang4.LexicalType;
+import newlang5.*;
 
 public class ProgramNode extends Node {
 
@@ -22,5 +21,10 @@ public class ProgramNode extends Node {
     //ProgramNodeを渡すことは無いので表示もされない。
     public String toString() {
         return "This is a Program Node.";
+    }
+
+    @Override
+    public Value getValue() throws Exception {
+        throw new Exception("ProgramNodeからgetValueはできません");
     }
 }

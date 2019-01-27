@@ -1,6 +1,6 @@
 package nodes;
 
-import newlang4.*;
+import newlang5.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,7 +8,7 @@ import java.util.Set;
 public class ForStmtNode extends Node {
 
     private Node subst; //SUBSTを期待
-    private LexicalUnit maxval;
+    private LexicalUnit target;
     private Node operation;
     private LexicalUnit name;
 // <FOR> <subst> <TO> <INTVAL> <NL> <stmt_list> <NEXT> <NAME>
@@ -51,7 +51,7 @@ public class ForStmtNode extends Node {
 
         // check <INTVAL>
         if (env.getInput().expect(LexicalType.INTVAL)) {
-            maxval = env.getInput().get();
+            target = env.getInput().get();
         } else {
             throw new Exception("FOR文中に終了値(整数)がありません");
         }
@@ -88,10 +88,23 @@ public class ForStmtNode extends Node {
     }
 
     public Value getValue() throws Exception {
+        SubstNode subst = (SubstNode) this.subst;
+        subst.getValue();   //初期化
+        VariableNode controlVar = env.getVariable(name.getValue().getSValue()); //制御変数の取得
+        //どちらの方向に進むのか
+        int step = target.getValue().getDValue() > subst.expr.getValue().getDValue() ? 1 : -1;
+
+        while (true) {
+            operation.getValue();
+            controlVar.setValue(new ExprNode(controlVar, ConstNode.getHandler(new ValueImpl(step)), LexicalType.ADD).getValue());
+            if (controlVar.getValue().getDValue() > target.getValue().getDValue()) {
+                break;
+            }
+        }
         return null;
     }
 
     public String toString() {
-        return String.format("FOR(%s TO %s ){\n%s\n}\n:%s", subst, maxval, operation, name);
+        return String.format("FOR(%s TO %s ){\n%s\n}\n:%s", subst, target, operation, name);
     }
 }

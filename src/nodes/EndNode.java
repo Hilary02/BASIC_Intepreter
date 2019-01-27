@@ -1,6 +1,6 @@
 package nodes;
 
-import newlang4.*;
+import newlang5.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,8 +28,14 @@ public class EndNode extends Node {
             env.getInput().get();
             return true;
         } else {
-            throw new Exception("\nSyntax Error : When EndNode parsing.");
+            throw new Exception("ENDnodeが適切なタイミングで呼ばれませんでした");
         }
+    }
+
+    @Override
+    public Value getValue() throws Exception {
+        System.out.println("\nProgram END");
+        return null;
     }
 
     @Override

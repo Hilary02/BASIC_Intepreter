@@ -1,4 +1,4 @@
-package newlang4;
+package newlang5;
 
 public class LexicalUnit {
 
@@ -15,7 +15,6 @@ public class LexicalUnit {
         value = this_value;
     }
 
-    
     public Value getValue() {
         return value;
     }
@@ -34,6 +33,8 @@ public class LexicalUnit {
                 return "DOUBLEVAL:\t" + value.getSValue();
             case INTVAL:
                 return "INTVAL:\t" + value.getSValue();
+            case BOOLVAL:
+                return "BOOLVAL:\t" + value.getSValue();
             case IF:
                 return ("IF");
             case THEN:
@@ -62,6 +63,10 @@ public class LexicalUnit {
                 return ("EQ");
             case LT:
                 return ("LT");
+            case DO:
+                return ("DO");
+            case FUNC:
+                return ("FUNC");
             case GT:
                 return ("GT");
             case LE:
@@ -72,8 +77,6 @@ public class LexicalUnit {
                 return ("DOT");
             case WHILE:
                 return ("WHILE");
-            case DO:    //追加
-                return ("DO");
             case UNTIL:
                 return ("UNTIL");
             case ADD:
@@ -100,6 +103,8 @@ public class LexicalUnit {
                 return ("NE");
             case ENDIF:
                 return ("ENDIF");
+            case MOD:
+                return ("MOD");
         }
         return "";
     }

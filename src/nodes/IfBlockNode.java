@@ -3,9 +3,7 @@ package nodes;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import newlang4.Environment;
-import newlang4.LexicalType;
-import newlang4.LexicalUnit;
+import newlang5.*;
 
 public class IfBlockNode extends Node {
 
@@ -131,6 +129,19 @@ public class IfBlockNode extends Node {
             throw new Exception("条件文に続く適切な字句がありません");
         }
         return true;
+    }
+
+    @Override
+    public Value getValue() throws Exception {
+        if (cond.getValue().getBValue()) {
+            trueOpe.getValue();
+        } else {
+            if (elseOpe != null) {
+                elseOpe.getValue();
+            }
+        }
+
+        return super.getValue();
     }
 
     public String toString() {

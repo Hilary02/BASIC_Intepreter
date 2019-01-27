@@ -1,7 +1,8 @@
 package nodes;
 
+import newlang5.*;
+
 import java.util.ArrayDeque;
-import newlang4.*;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,7 +13,7 @@ public class ExprNode extends Node {
 
     private Node left;
     private Node right;
-    private LexicalType operand;
+    private LexicalType operator;
     private boolean isMono = false;
 
     static final Set<LexicalType> FIRST_SET = new HashSet<LexicalType>() {
@@ -34,6 +35,7 @@ public class ExprNode extends Node {
         OPER_SET.put(LexicalType.SUB, "-");
         OPER_SET.put(LexicalType.MUL, "*");
         OPER_SET.put(LexicalType.DIV, "/");
+        OPER_SET.put(LexicalType.MOD, "%");
     }
 
     private ExprNode(Environment env) {
@@ -48,11 +50,11 @@ public class ExprNode extends Node {
         isMono = b;
     }
 
-    private ExprNode(Node l, Node r, LexicalType o) {
+    public ExprNode(Node l, Node r, LexicalType o) {
         type = NodeType.EXPR;
         left = l;
         right = r;
-        operand = o;
+        operator = o;
     }
 
     public static boolean isMatch(LexicalType type) {
@@ -105,7 +107,8 @@ public class ExprNode extends Node {
                         exprStack.add(funcNode);
 
                     } else {
-                        exprStack.add(new VariableNode(env.getInput().get().getValue().getSValue()));   //ただの変数
+                        //exprStack.add(new VariableNode(env.getInput().get().getValue().getSValue()));   //ただの変数
+                        exprStack.add(env.getVariable(env.getInput().get().getValue().getSValue()));
                     }
                     break;
                 default:
@@ -116,7 +119,7 @@ public class ExprNode extends Node {
             if (isMono) {
                 //計算時用に-1がかけられたものとする
                 left = ConstNode.getHandler(new ValueImpl(-1));
-                operand = LexicalType.MUL;
+                operator = LexicalType.MUL;
                 right = exprStack.pollLast();
                 return true;
             }
@@ -143,7 +146,16 @@ public class ExprNode extends Node {
         }
         //式の洗い出しが終わった.
         int nOper = operStack.size();
-        for (int i = 0; i < nOper; i++) {
+
+        if ((operStack.size() > 0) && getOpePriority(operStack.peekLast().getType()) == 2) {
+            Node r = exprStack.pollLast();
+            Node l = exprStack.pollLast();
+            LexicalType op = operStack.pollLast().getType();
+            exprStack.addLast(new ExprNode(l, r, op));
+        }
+
+        while (!operStack.isEmpty()) {
+
             Node l = exprStack.pollFirst();
             Node r = exprStack.pollFirst();
             LexicalType op = operStack.pollFirst().getType();
@@ -154,17 +166,66 @@ public class ExprNode extends Node {
         return true;
     }
 
+    @Override
     public Value getValue() throws Exception {
-        return null;
+        //単項式であるかどうかで分岐
+        if (operator == null) {
+            return left.getValue();
+        } else {
+            Value val1 = left.getValue();
+            Value val2 = right.getValue();
+
+            //数値比較 両方整数ver
+            if (val1.getType() == ValueType.INTEGER && val2.getType() == ValueType.INTEGER) {
+                if (operator == LexicalType.ADD) {
+                    return new ValueImpl(val1.getIValue() + val2.getIValue());
+                } else if (operator == LexicalType.SUB) {
+                    return new ValueImpl(val1.getIValue() - val2.getIValue());
+                } else if (operator == LexicalType.MUL) {
+                    return new ValueImpl(val1.getIValue() * val2.getIValue());
+                } else if (operator == LexicalType.DIV) {
+                    return new ValueImpl(val1.getIValue() / val2.getIValue());
+                } else if (operator == LexicalType.MOD) {
+                    return new ValueImpl(val1.getIValue() % val2.getIValue());
+                } else {
+                    throw new Exception("不正な演算子で演算を試みました。");
+                }
+            } else if ((val1.getType() == ValueType.INTEGER || val1.getType() == ValueType.DOUBLE)
+                    && (val2.getType() == ValueType.INTEGER || val2.getType() == ValueType.DOUBLE)) {
+                //どちらかが実数ver 実数にキャストする
+                if (operator == LexicalType.ADD) {
+                    return new ValueImpl(val1.getDValue() + val2.getDValue());
+                } else if (operator == LexicalType.SUB) {
+                    return new ValueImpl(val1.getDValue() - val2.getDValue());
+                } else if (operator == LexicalType.MUL) {
+                    return new ValueImpl(val1.getDValue() * val2.getDValue());
+                } else if (operator == LexicalType.DIV) {
+                    return new ValueImpl(val1.getDValue() / val2.getDValue());
+                } else if (operator == LexicalType.MOD) {
+                    return new ValueImpl(val1.getDValue() % val2.getDValue());
+                } else {
+                    throw new Exception("不正な演算子で演算を試みました。");
+                }
+            } else if (val1.getType() == ValueType.STRING || val2.getType() == ValueType.STRING) {
+                if (operator == LexicalType.ADD) {
+                    //文字列の足し算に変更
+                    return new ValueImpl(val1.getSValue() + val2.getSValue());
+                }else{
+                    throw new Exception("文字列の計算は加算のみ行えます");
+                }
+            } else {
+                throw new Exception("実行できない演算を試みました");
+            }
+        }
     }
 
     public String toString() {
-        if (operand == null) {
+        if (operator == null) {
             return "" + left;
         } else if (isMono) {
             return "-" + right;
         } else {
-            return String.format("(%s)(%s)%s", left, right, OPER_SET.get(operand));
+            return String.format("(%s,%s,%s)", left, right, OPER_SET.get(operator));
         }
     }
 
@@ -173,6 +234,7 @@ public class ExprNode extends Node {
         switch (type) {
             case MUL:
             case DIV:
+            case MOD:
                 return 2;
             case SUB:
             case ADD:

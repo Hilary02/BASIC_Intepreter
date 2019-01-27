@@ -3,11 +3,11 @@ package nodes;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Arrays;
-import newlang4.*;
+import newlang5.*;
 
 public class VariableNode extends Node {
 
-    String name;
+    String var_name;
     Value v = null;
 
     static final Set<LexicalType> FIRST_SET = new HashSet<LexicalType>(Arrays.asList(
@@ -16,33 +16,50 @@ public class VariableNode extends Node {
 
     public VariableNode(String name) {
         type = NodeType.VARIABLE;
-        this.name = name;
+        var_name = name;
     }
 
-    public VariableNode(String name, Value v) {
+    public VariableNode(LexicalUnit lu) {
         type = NodeType.VARIABLE;
-        this.name = name;
-        this.v = v;
+        var_name = lu.getValue().getSValue();
     }
 
     public static boolean isMatch(LexicalType type) {
         return FIRST_SET.contains(type);
     }
 
+    /*
+    public static Node getHandler(Environment env, LexicalUnit first) {
+        if (isMatch(first.getType())) {
+            VariableNode varNode;
+            try {
+                LexicalUnit lu = env.getInput().peep();
+                String s = lu.getValue().getSValue();
+                varNode = env.getVariable(s);
+                return varNode;
+            } catch (Exception e) {
+            }
+        }
+        return null;
+    }
+     */
     public boolean parse() {
         return false;
     }
 
     public String toString() {
-        return "Var：" + name;
+        return "V:" + var_name;
     }
 
     //getterとsetter
     public void setValue(Value newv) {
-        v = newv;
-    } 
+        this.v = newv;
+    }
 
-    public Value getValue() {
+    public Value getValue() throws Exception {
+        if (v == null) {
+            throw new Exception("初期化されていない変数を参照しました");
+        }
         return v;
     }
 }

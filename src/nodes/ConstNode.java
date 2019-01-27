@@ -1,6 +1,6 @@
 package nodes;
 
-import newlang4.*;
+import newlang5.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,6 +46,7 @@ public class ConstNode extends Node {
         return false;
     }
 
+    @Override
     public Value getValue() throws Exception {
         return value;
     }

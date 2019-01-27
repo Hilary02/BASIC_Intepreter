@@ -5,10 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import newlang4.Environment;
-import newlang4.LexicalType;
-import newlang4.LexicalUnit;
-import newlang4.Value;
+import newlang5.*;
 
 public class StmtListNode extends Node {
 
@@ -29,8 +26,6 @@ public class StmtListNode extends Node {
         }
     };
 
-    //コンストラクタもprivateでsuper呼べばOK
-    //Environmentってなんだ？
     private StmtListNode(Environment env) {
         super(env);
         type = NodeType.STMT_LIST;
@@ -67,9 +62,14 @@ public class StmtListNode extends Node {
         return true;
     }
 
-    //今回は作らない。プログラムを実行するメソッド
-    //ExprのgetValueは式の値を返してくれる
+    @Override
     public Value getValue() throws Exception {
+        for (Node node : child) {
+            node.getValue();
+            if (node.getType() == NodeType.END) {
+                return null;
+            }
+        }
         return null;
     }
 

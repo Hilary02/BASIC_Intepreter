@@ -3,10 +3,7 @@ package nodes;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import newlang4.Environment;
-import newlang4.LexicalType;
-import newlang4.LexicalUnit;
-import newlang4.Value;
+import newlang5.*;
 
 public class StmtNode extends Node {
 
@@ -49,7 +46,7 @@ public class StmtNode extends Node {
         }
     }
 
-    public Value getValue() throws Exception {
+    public Value getValue() throws Exception { //何かがおかしい
         return null;
     }
 

@@ -5,8 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import newlang4.Environment;
-import newlang4.LexicalType;
+import newlang5.*;
 
 public class BlockNode extends Node {
 
@@ -34,6 +33,11 @@ public class BlockNode extends Node {
 
     public boolean parse() throws Exception {
         throw new Exception("BlockNodeクラスのparseは実行できません。");
+    }
+
+    @Override
+    public Value getValue() throws Exception {
+        throw new Exception("BlockNodeクラスのgetValueは実行できません。");
     }
 
     public String toString() {

@@ -3,9 +3,8 @@ package nodes;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import newlang4.Environment;
-import newlang4.LexicalType;
-import newlang4.LexicalUnit;
+import newlang5.*;
+import funcs.*;
 
 // <call_sub> ::=
 //      <NAME> <expr_list>
@@ -51,6 +50,16 @@ public class FunctionCallNode extends Node {
             env.getInput().get();
         }
         return true;
+    }
+
+    @Override
+    public Value getValue() throws Exception {
+        Function func = env.getFunction(funcName);
+        if (func == null) {
+            throw new Exception("存在しない関数が呼ばれました");
+        }
+        ExprListNode arg = (ExprListNode) arguments;
+        return func.invoke(arg);
     }
 
     public String toString() {

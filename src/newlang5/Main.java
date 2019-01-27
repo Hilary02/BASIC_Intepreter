@@ -1,7 +1,8 @@
-package newlang4;
+package newlang5;
 
 import nodes.Node;
 import nodes.ProgramNode;
+
 import java.io.FileInputStream;
 
 public class Main {
@@ -13,22 +14,28 @@ public class Main {
         Environment env;
         Node program;
 
-        System.out.println("==basic parser==");
-        fin = new FileInputStream("test1.bas");
+        System.out.println("==basic Interpreter==");
+        try {
+            fin = new FileInputStream("test1.bas");
+        } catch (Exception e) {
+            System.out.println("file not found");
+            System.exit(-1);
+        }
         lex = new LexicalAnalyzerImpl(fin);
         env = new Environment(lex);
         first = lex.get();
         lex.unget(first);
 
-        //program = Program.isMatch(env, first);
-        program = ProgramNode.getHandler(first.getType(), env);
-        if (program != null && program.parse()) {   //programが存在し、かつparseできたとき
-            System.out.println(program);
-            //  System.out.println("value = " + program.getValue());
-            //これは後ででもいい
+        program = ProgramNode.getHandler(env.getInput().peep().getType(), env);
+
+        if (program != null && program.parse()) {
+            //System.out.println(program);
         } else {
             System.out.println("syntax error");
         }
+        System.out.println("==execute==");
+        program.getValue();
         System.out.println("==Finish!==");
     }
+
 }

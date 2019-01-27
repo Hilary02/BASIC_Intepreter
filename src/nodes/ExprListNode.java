@@ -1,7 +1,7 @@
 package nodes;
 
 import java.util.ArrayList;
-import newlang4.*;
+import newlang5.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -52,8 +52,10 @@ public class ExprListNode extends Node {
         return true;
     }
 
+    @Override
     public Value getValue() throws Exception {
-        return null;
+        throw new Exception("ExprListNodeからgetValueはできません");
+        //return null;
     }
 
     public String toString() {
@@ -63,5 +65,9 @@ public class ExprListNode extends Node {
         }
         str += child.get(child.size() - 1);
         return str;
+    }
+
+    public List<Node> getChild() {
+        return child;
     }
 }
